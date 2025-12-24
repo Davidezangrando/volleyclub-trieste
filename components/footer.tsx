@@ -17,7 +17,6 @@ export function Footer() {
                   width={40}
                   height={40}
                   className="w-full h-full object-cover"
-                  priority={true}
                 />
               </div>
               <div>
@@ -25,7 +24,7 @@ export function Footer() {
               </div>
             </div>
             <p className="text-white/70 dark:text-white/70 text-sm sm:text-base text-pretty max-w-md">
-              Pallavolo femminile a Trieste dal 1976. Passione, determinazione e spirito di squadra.
+              Pallavolo a Trieste dal 1976. Passione, determinazione e spirito di squadra.
             </p>
           </div>
 

@@ -18,7 +18,7 @@ export function HeroSection() {
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white dark:text-white light:text-black/80 mb-8 sm:mb-10 text-pretty max-w-2xl mx-auto drop-shadow-lg px-4 sm:px-6 font-medium leading-relaxed animate-fadeInUp animate-delay-200">
-            Passione, determinazione e spirito di squadra. La pallavolo femminile a Trieste dal 1976.
+            Passione, determinazione e spirito di squadra. La pallavolo a Trieste dal 1976.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-12 sm:mb-16 px-4 sm:px-0 animate-fadeInUp animate-delay-400">
@@ -90,7 +90,7 @@ export function HeroSection() {
                 <h2 className="text-2xl sm:text-3xl font-black text-white light:text-black mb-2 drop-shadow-lg group-hover:text-[var(--color-volleyball-green-light)] transition-colors duration-300">
                   Trieste
                 </h2>
-                <p className="text-sm sm:text-base text-white/90 light:text-black/80 font-medium drop-shadow-md">Palestra Comunale</p>
+                <p className="text-sm sm:text-base text-white/90 light:text-black/80 font-medium drop-shadow-md">Palestra Cobolli Trieste</p>
                 <div className="w-12 h-1 bg-gradient-to-r from-[var(--color-volleyball-green)] to-[var(--color-volleyball-green-light)] mx-auto mt-3 sm:mt-4 rounded-full shadow-lg group-hover:w-16 transition-all duration-300"></div>
               </div>
             </div>

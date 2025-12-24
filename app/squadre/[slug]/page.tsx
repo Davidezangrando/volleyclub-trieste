@@ -3,7 +3,7 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { User, ArrowLeft, Trophy, Users } from "lucide-react"
+import { User, UserCheck, ArrowLeft, Trophy, Users } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import Image from "next/image"
@@ -28,31 +28,48 @@ interface Squadra {
   slug: string
 }
 
-// Funzione helper per normalizzare i ruoli
+// Helper per evitare errori con le immagini (percorsi relativi/assoluti)
+function getSafeImageUrl(url: string | null) {
+  if (!url) return "/placeholder.svg";
+  if (url.startsWith("http") || url.startsWith("https")) return url;
+  if (url.startsWith("/")) return url;
+  return `/${url}`;
+}
+
+// Funzione helper "intelligente" per normalizzare i ruoli
 const getRoleCategory = (ruolo: string | null) => {
   if (!ruolo) return "Altri";
   const r = ruolo.toLowerCase();
   
+  // 1. Opposti (controllo prima per evitare sovrapposizioni)
+  if (r.includes("oppost")) 
+    return "Opposti";
+  
+  // 2. Schiacciatori (Bande / Ali / Martelli)
+  if (r.includes("schiacciator") || r.includes("banda") || r.includes("martello") || r.includes("ala") || r.includes("outside") || r.includes("hitter")) 
+    return "Schiacciatori";
+  
+  // 3. Centrali
+  if (r.includes("central") || r.includes("middle") || r.includes("centro")) 
+    return "Centrali";
+  
+  // 4. Alzatori (Palleggiatori)
   if (r.includes("alzator") || r.includes("palleggiator") || r.includes("regista") || r.includes("setter")) 
     return "Alzatori";
   
-  if (r.includes("schiacciator") || r.includes("oppost") || r.includes("banda") || r.includes("martello") || r.includes("outside") || r.includes("hitter")) 
-    return "Schiacciatori & Opposti";
-  
-  if (r.includes("central") || r.includes("middle")) 
-    return "Centrali";
-  
+  // 5. Liberi
   if (r.includes("liber")) 
     return "Liberi";
 
   return "Altri";
 }
 
-// Colori specifici per i badge dei ruoli (per dare un tocco simile allo screenshot ma in dark mode)
+// Colori specifici per i badge (Aggiunto Arancione per Opposti)
 const getRoleColorClass = (category: string) => {
   switch(category) {
     case "Alzatori": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
-    case "Schiacciatori & Opposti": return "bg-blue-500/20 text-blue-400 border-blue-500/50";
+    case "Schiacciatori": return "bg-blue-500/20 text-blue-400 border-blue-500/50";
+    case "Opposti": return "bg-orange-500/20 text-orange-400 border-orange-500/50";
     case "Centrali": return "bg-green-500/20 text-green-400 border-green-500/50";
     case "Liberi": return "bg-red-500/20 text-red-400 border-red-500/50";
     default: return "bg-gray-500/20 text-gray-400 border-gray-500/50";
@@ -63,7 +80,8 @@ const getRoleColorClass = (category: string) => {
 const getSectionBorderColor = (category: string) => {
   switch(category) {
     case "Alzatori": return "border-yellow-500";
-    case "Schiacciatori & Opposti": return "border-blue-500";
+    case "Schiacciatori": return "border-blue-500";
+    case "Opposti": return "border-orange-500";
     case "Centrali": return "border-green-500";
     case "Liberi": return "border-red-500";
     default: return "border-gray-500";
@@ -99,28 +117,35 @@ export default async function SquadraDetailPage({ params }: { params: Promise<{ 
   const typedSquadra = squadra as Squadra
   const typedGiocatori = (giocatori || []) as Giocatore[]
 
-  // Raggruppa i giocatori
+  // Raggruppa i giocatori rispettando l'ordine richiesto
+  // L'ordine delle chiavi qui determina l'ordine di visualizzazione
   const groupedPlayers: Record<string, Giocatore[]> = {
-    "Alzatori": [],
-    "Schiacciatori & Opposti": [],
+    "Schiacciatori": [],
+    "Opposti": [],
     "Centrali": [],
+    "Alzatori": [],
     "Liberi": [],
     "Altri": []
   };
 
   typedGiocatori.forEach(giocatore => {
     const category = getRoleCategory(giocatore.ruolo);
-    groupedPlayers[category].push(giocatore);
+    if (groupedPlayers[category]) {
+        groupedPlayers[category].push(giocatore);
+    } else {
+        // Fallback di sicurezza se la categoria non esiste
+        groupedPlayers["Altri"].push(giocatore);
+    }
   });
 
-  // Rimuovi categorie vuote per il rendering
+  // Filtra per mostrare solo le categorie che hanno giocatori
   const activeCategories = Object.entries(groupedPlayers).filter(([_, players]) => players.length > 0);
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
       <Header />
 
-      {/* Hero Section Ridotta - Focus sul contenuto testuale */}
+      {/* Hero Section */}
       <section className="pt-24 pb-8">
         <div className="container mx-auto px-4">
           <Link href="/squadre">
@@ -130,54 +155,78 @@ export default async function SquadraDetailPage({ params }: { params: Promise<{ 
             </Button>
           </Link>
 
-          <div className="flex flex-col md:flex-row gap-8 items-end mb-12">
-            <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                    <Trophy className="h-6 w-6 text-[var(--color-volleyball-green-light)]" />
-                    <span className="text-[var(--color-volleyball-green-light)] font-bold text-lg uppercase tracking-wider">
-                    {typedSquadra.categoria}
-                    </span>
-                </div>
-                <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">{typedSquadra.nome}</h1>
-                <p className="text-white/70 text-lg max-w-2xl">{typedSquadra.descrizione}</p>
+          {/* Header Squadra */}
+          <div className="relative h-[400px] rounded-2xl overflow-hidden mb-8 shadow-2xl">
+            {typedSquadra.immagine_url ? (
+              <Image
+                src={getSafeImageUrl(typedSquadra.immagine_url)}
+                alt={typedSquadra.nome}
+                fill
+                className="object-cover"
+                priority={true} // Importante per la velocità (LCP)
+                sizes="(max-width: 1024px) 100vw, 1200px"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-[var(--color-volleyball-green)] to-[var(--color-volleyball-green-light)] flex items-center justify-center">
+                <Users className="h-32 w-32 text-white/30" />
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+
+            <div className="absolute bottom-0 left-0 right-0 p-8">
+              <div className="flex items-center gap-3 mb-3">
+                <Trophy className="h-8 w-8 text-[var(--color-volleyball-green-light)]" />
+                <span className="text-[var(--color-volleyball-green-light)] font-bold text-xl uppercase tracking-wider">
+                  {typedSquadra.categoria}
+                </span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 shadow-black drop-shadow-lg">{typedSquadra.nome}</h1>
+              <p className="text-white/90 text-lg max-w-3xl drop-shadow-md">{typedSquadra.descrizione}</p>
             </div>
-            
-            {/* Staff Section - Ora in alto come nel design */}
-            <div className="w-full md:w-auto flex flex-col sm:flex-row gap-4">
-                {typedSquadra.allenatore && (
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center gap-4 min-w-[250px]">
-                        <div className="h-12 w-12 rounded-full bg-[var(--color-volleyball-green)]/20 flex items-center justify-center text-[var(--color-volleyball-green-light)]">
-                            <User className="h-6 w-6" />
-                        </div>
-                        <div>
-                            <p className="text-xs text-[var(--color-volleyball-green-light)] font-bold uppercase">Allenatore</p>
-                            <p className="text-white font-bold">{typedSquadra.allenatore}</p>
-                        </div>
-                    </div>
-                )}
-                 {typedSquadra.assistente_allenatore && (
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center gap-4 min-w-[250px]">
-                        <div className="h-12 w-12 rounded-full bg-white/10 flex items-center justify-center text-white/70">
-                            <Users className="h-6 w-6" />
-                        </div>
-                        <div>
-                            <p className="text-xs text-white/50 font-bold uppercase">Assistente</p>
-                            <p className="text-white font-bold">{typedSquadra.assistente_allenatore}</p>
-                        </div>
-                    </div>
-                )}
-            </div>
+          </div>
+
+          {/* Info Staff - Due card affiancate */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+            {typedSquadra.allenatore && (
+              <Card className="glass border-white/20 bg-white/5">
+                <CardContent className="flex items-center gap-4 p-6">
+                  <div className="w-12 h-12 rounded-full bg-[var(--color-volleyball-green)]/20 flex items-center justify-center border border-[var(--color-volleyball-green)]/30">
+                    <User className="h-6 w-6 text-[var(--color-volleyball-green-light)]" />
+                  </div>
+                  <div>
+                    <p className="text-[var(--color-volleyball-green-light)] font-bold text-xs uppercase tracking-widest">Allenatore</p>
+                    <p className="text-white font-bold text-lg">{typedSquadra.allenatore}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {typedSquadra.assistente_allenatore && (
+              <Card className="glass border-white/20 bg-white/5">
+                <CardContent className="flex items-center gap-4 p-6">
+                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
+                    <UserCheck className="h-6 w-6 text-white/80" />
+                  </div>
+                  <div>
+                    <p className="text-white/50 font-bold text-xs uppercase tracking-widest">
+                      Assistente
+                    </p>
+                    <p className="text-white font-bold text-lg">{typedSquadra.assistente_allenatore}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Sezione Rosa Giocatori - Layout a Lista/Gruppi */}
-      <section className="pb-24">
+      {/* Sezione Giocatori */}
+      <section className="py-8 pb-24">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-3 mb-10">
+          <h2 className="text-3xl font-bold text-white mb-12 flex items-center gap-3">
             <Users className="h-8 w-8 text-[var(--color-volleyball-green-light)]" />
-            <h2 className="text-3xl font-bold text-white">Rosa Giocatori</h2>
-          </div>
+            Rosa Giocatori
+          </h2>
 
           {typedGiocatori.length === 0 ? (
             <Card className="glass border-white/20">
@@ -187,53 +236,62 @@ export default async function SquadraDetailPage({ params }: { params: Promise<{ 
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-12">
-                {activeCategories.map(([category, players]) => (
-                    <div key={category} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        {/* Intestazione Categoria con barra colorata come screenshot */}
-                        <div className={`flex items-center gap-3 mb-6 pl-4 border-l-4 ${getSectionBorderColor(category)}`}>
-                            <h3 className="text-xl font-bold text-white">{category}</h3>
-                        </div>
-                        
-                        {/* Griglia delle card orizzontali */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {players.map((giocatore) => (
-                                <Card key={giocatore.id} className="glass border-white/10 hover:border-white/30 transition-all duration-300 group">
-                                    <CardContent className="p-4 flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            {/* Numero Maglia nel cerchio */}
-                                            <div className={`h-12 w-12 rounded-full flex items-center justify-center font-bold text-lg border shadow-lg
-                                                ${getRoleColorClass(category)}
-                                            `}>
-                                                {giocatore.numero_maglia || "-"}
-                                            </div>
-                                            
-                                            {/* Info Giocatore */}
-                                            <div className="flex flex-col">
-                                                <span className="text-white font-bold text-lg group-hover:text-[var(--color-volleyball-green-light)] transition-colors">
-                                                    {giocatore.nome} {giocatore.cognome}
-                                                </span>
-                                                {/* Se avessimo l'anno di nascita, andrebbe qui. Uso un placeholder se vuoi o nascondo */}
-                                                {/* <span className="text-white/40 text-sm">2001</span> */}
-                                            </div>
-                                        </div>
-
-                                        {/* Ruolo (label destra) */}
-                                        <div className="hidden sm:block">
-                                            <span className="text-xs font-semibold text-white/30 uppercase tracking-widest">
-                                                {giocatore.ruolo ? 
-                                                  (giocatore.ruolo === 'Palleggiatore' ? 'SETTER' : 
-                                                   giocatore.ruolo === 'Libero' ? 'LIBERO' : 
-                                                   giocatore.ruolo === 'Centrale' ? 'MIDDLE' : 'OUTSIDE') 
-                                                  : ''}
-                                            </span>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
+            <div className="space-y-16">
+              {activeCategories.map(([category, players]) => (
+                 <div key={category} className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    {/* Intestazione Categoria */}
+                    <div className={`flex items-center gap-3 mb-6 pl-4 border-l-4 ${getSectionBorderColor(category)}`}>
+                        <h3 className="text-2xl font-bold text-white">{category}</h3>
+                        <span className="text-white/40 text-sm font-medium">({players.length})</span>
                     </div>
-                ))}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {players.map((giocatore) => (
+                        <Card key={giocatore.id} className="glass border-white/10 overflow-hidden group hover:border-white/30 transition-all duration-300">
+                            <CardContent className="p-0">
+                                {/* Parte superiore con numero e ruolo */}
+                                <div className="p-5 flex items-start justify-between relative">
+                                    <div className={`w-14 h-14 rounded-full flex items-center justify-center font-bold text-2xl border shadow-lg z-10
+                                        ${getRoleColorClass(category)}
+                                    `}>
+                                        {giocatore.numero_maglia || "-"}
+                                    </div>
+                                    
+                                    {/* Ruolo stampato piccolo a destra */}
+                                    <div className="text-right z-10">
+                                        <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest block">Ruolo</span>
+                                        <span className="text-xs font-semibold text-white/80 uppercase">
+                                            {category === 'Schiacciatori' ? 'Banda' : 
+                                             category === 'Alzatori' ? 'Palleggiatore' : 
+                                             category.slice(0, -1)} {/* Toglie la 'i' finale per il singolare (circa) */}
+                                        </span>
+                                    </div>
+
+                                    {/* Sfondo sfumato leggero dietro */}
+                                    <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br opacity-20 rounded-bl-full pointer-events-none
+                                        ${category === 'Schiacciatori' ? 'from-blue-500 to-transparent' : 
+                                          category === 'Opposti' ? 'from-orange-500 to-transparent' :
+                                          category === 'Centrali' ? 'from-green-500 to-transparent' :
+                                          category === 'Alzatori' ? 'from-yellow-500 to-transparent' :
+                                          'from-red-500 to-transparent'}
+                                    `}></div>
+                                </div>
+
+                                {/* Parte inferiore con nome */}
+                                <div className="px-5 pb-5 pt-2">
+                                    <h3 className="text-white font-bold text-xl truncate group-hover:text-[var(--color-volleyball-green-light)] transition-colors">
+                                        {giocatore.nome}
+                                    </h3>
+                                    <p className="text-white/70 font-medium uppercase tracking-wide text-sm">
+                                        {giocatore.cognome}
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                    </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

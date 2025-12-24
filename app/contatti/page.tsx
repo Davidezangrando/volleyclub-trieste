@@ -192,7 +192,7 @@ ${formData.messaggio}
                     <div>
                       <h3 className="text-white font-semibold mb-1">Sede e Palestra</h3>
                       <p className="text-white/80">
-                        Palestra Comunale di Trieste
+                        Palestra Cobolli Trieste
                         <br />
                         Via della Valle, 3
                         <br />
