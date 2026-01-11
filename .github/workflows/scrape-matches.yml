@@ -1,10 +1,8 @@
 name: Scrape Partite Volley
 
 on:
-  # Esegue lo script ogni giorno alle 04:00 di mattina (UTC)
   schedule:
-    - cron: '0 4 * * *'
-  # Permette di avviare lo script manualmente dal tab "Actions" di GitHub
+    - cron: '0 4 * * *' # Ogni giorno alle 4:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -12,27 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Scarica il codice del repository
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # 2. Installa Node.js (versione 20)
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 3. Installa le dipendenze (npm install o pnpm install)
-      # Se usi pnpm, fammelo sapere che cambiamo questa riga, ma npm va bene per tutti
       - name: Install dependencies
-        run: npm install
+        # L'opzione --legacy-peer-deps risolve il conflitto tra React 19 e vaul
+        run: npm install --legacy-peer-deps
 
-      # 4. Esegue lo script TypeScript
       - name: Run Scraper Script
         run: npx tsx scripts/scrape-matches.ts
         env:
-          # Passiamo le chiavi segrete salvate su GitHub all'ambiente dello script
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          # La chiave anon non serve qui se usiamo la service role, ma se lo script la richiede:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
