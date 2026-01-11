@@ -8,25 +8,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Partite e Risultati",
-  description: "Calendario completo e risultati delle partite del Volley Club Trieste. Segui le nostre squadre Serie D maschile e femminile, Prima Divisione e Under in tempo reale. Prossime partite e statistiche.",
-  keywords: [
-    "partite Volley Club Trieste",
-    "calendario pallavolo Trieste",
-    "risultati volley Trieste",
-    "Serie D partite Trieste",
-    "prossime partite pallavolo",
-    "campionato pallavolo FVG",
-    "risultati Serie D Trieste"
-  ],
-  openGraph: {
-    title: "Partite e Risultati - Volley Club Trieste",
-    description: "Calendario completo, risultati e statistiche delle partite del Volley Club Trieste. Segui le nostre squadre in campo!",
-    url: "https://www.volleyclub.it/partite",
-    type: "website",
-  },
-  alternates: {
-    canonical: "https://www.volleyclub.it/partite",
-  },
+  description: "Calendario completo e risultati delle partite del Volley Club Trieste.",
 }
 
 interface Match {
@@ -70,7 +52,7 @@ function getMatchStatusBadge(stato: string, dataPartita: string) {
       return <Badge className="bg-red-600 hover:bg-red-700 animate-pulse">In Corso</Badge>
     case "programmata":
       if (matchDate < now) {
-        return <Badge className="bg-yellow-600 hover:bg-yellow-700">Da Aggiornare</Badge>
+        return <Badge className="bg-yellow-600 hover:bg-yellow-700">In Attesa</Badge>
       }
       return <Badge className="bg-blue-600 hover:bg-blue-700">Programmata</Badge>
     default:
@@ -81,34 +63,48 @@ function getMatchStatusBadge(stato: string, dataPartita: string) {
 export default async function PartitePage() {
   const supabase = await createClient()
 
-  // Get all matches ordered by date
+  // Recuperiamo tutte le partite
   const { data: matches, error } = await supabase
     .from("partite")
     .select("*")
-    .order("data_partita", { ascending: false })
+    .order("data_partita", { ascending: true })
 
   if (error) {
     console.error("Error fetching matches:", error)
   }
 
-  // Separate matches by status
-  const upcomingMatches = matches?.filter((match) => {
-    const matchDate = new Date(match.data_partita)
-    const now = new Date()
-    return match.stato === "programmata" && matchDate >= now
-  })
+  const now = new Date()
 
-  const pastMatches = matches?.filter((match) => {
+  // --- LOGICA RISULTATI (Partite Passate) ---
+  const pastMatches = matches
+    ?.filter((match) => {
+      const matchDate = new Date(match.data_partita)
+      return match.stato === "conclusa" || (match.stato === "programmata" && matchDate < now)
+    })
+    .sort((a, b) => new Date(b.data_partita).getTime() - new Date(a.data_partita).getTime())
+
+
+  // --- LOGICA PROSSIME PARTITE (Una per squadra/campionato) ---
+  const allUpcoming = matches?.filter((match) => {
     const matchDate = new Date(match.data_partita)
-    const now = new Date()
-    return match.stato === "conclusa" || (match.stato === "programmata" && matchDate < now)
-  })
+    return match.stato === "programmata" && matchDate >= now
+  }) || []
+
+  const shownChampionships = new Set<string>();
+  
+  const upcomingMatches = allUpcoming.filter(match => {
+    const camp = match.campionato || "Generico";
+    if (!shownChampionships.has(camp)) {
+        shownChampionships.add(camp);
+        return true;
+    }
+    return false;
+  });
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
       <Header />
 
-      {/* Hero Section */}
       <section className="pt-24 pb-16 bg-gradient-to-r from-black/80 to-gray-900/80">
         <div className="container mx-auto px-4">
           <div className="text-center">
@@ -123,119 +119,131 @@ export default async function PartitePage() {
         </div>
       </section>
 
-      {/* Matches Content */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Upcoming Matches */}
+            
+            {/* COLONNA 1: Prossime Partite */}
             <div>
               <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
                 <Calendar className="h-7 w-7 text-[var(--color-volleyball-green-light)]" />
-                Prossime Partite
+                Prossimi Appuntamenti
               </h2>
               {upcomingMatches && upcomingMatches.length > 0 ? (
                 <div className="space-y-6">
                   {upcomingMatches.map((match) => (
-                    <Card key={match.id} className="glass border-white/20">
-                      <CardHeader className="pb-3">
+                    <Card key={match.id} className="glass border-white/20 hover:border-[var(--color-volleyball-green)]/50 transition-colors">
+                      <CardHeader className="py-3 px-4 border-b border-white/5 bg-white/5">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <Trophy className="h-4 w-4 text-[var(--color-volleyball-green-light)]" />
-                            <span className="text-[var(--color-volleyball-green-light)] font-medium text-sm">
+                            <span className="text-[var(--color-volleyball-green-light)] font-bold text-sm uppercase tracking-wider">
                               {match.campionato}
                             </span>
                           </div>
                           {getMatchStatusBadge(match.stato, match.data_partita)}
                         </div>
                       </CardHeader>
-                      <CardContent>
-                        <div className="text-center mb-4">
-                          <div className="flex items-center justify-center gap-4 mb-2">
-                            <span className="text-white font-bold text-xl">{match.squadra_casa}</span>
-                            <span className="text-white/60 text-lg">vs</span>
-                            <span className="text-white font-bold text-xl">{match.squadra_ospite}</span>
+                      <CardContent className="pt-6">
+                        <div className="text-center mb-6">
+                          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <span className="text-white font-bold text-xl md:text-2xl text-balance">{match.squadra_casa}</span>
+                            <span className="text-white/40 text-sm px-2 bg-white/5 rounded-full py-1">VS</span>
+                            <span className="text-white font-bold text-xl md:text-2xl text-balance">{match.squadra_ospite}</span>
                           </div>
                         </div>
-                        <div className="space-y-3 text-sm">
-                          <div className="flex items-center gap-2 text-white/80">
-                            <Calendar className="h-4 w-4" />
-                            <span>{formatDate(match.data_partita)}</span>
+                        <div className="grid grid-cols-2 gap-4 text-sm bg-white/5 p-4 rounded-xl">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2 text-white/60 text-xs uppercase font-bold">
+                                <Calendar className="h-3 w-3" /> Data
+                            </div>
+                            <span className="text-white font-medium capitalize">{formatDate(match.data_partita)}</span>
                           </div>
-                          <div className="flex items-center gap-2 text-white/80">
-                            <Clock className="h-4 w-4" />
-                            <span>{formatTime(match.data_partita)}</span>
+                          <div className="flex flex-col gap-1">
+                             <div className="flex items-center gap-2 text-white/60 text-xs uppercase font-bold">
+                                <Clock className="h-3 w-3" /> Ora
+                            </div>
+                            <span className="text-white font-medium">{formatTime(match.data_partita)}</span>
                           </div>
                           {match.luogo && (
-                            <div className="flex items-center gap-2 text-white/80">
-                              <MapPin className="h-4 w-4" />
-                              <span>{match.luogo}</span>
+                            <div className="col-span-2 flex flex-col gap-1 border-t border-white/5 pt-2 mt-1">
+                                <div className="flex items-center gap-2 text-white/60 text-xs uppercase font-bold">
+                                    <MapPin className="h-3 w-3" /> Dove
+                                </div>
+                                <span className="text-white font-medium text-pretty">{match.luogo}</span>
                             </div>
                           )}
                         </div>
                       </CardContent>
                     </Card>
                   ))}
+                  <p className="text-center text-white/40 text-sm mt-4 italic">
+                    * Viene mostrata solo la prossima partita in programma per ogni campionato.
+                  </p>
                 </div>
               ) : (
                 <Card className="glass border-white/20">
                   <CardContent className="p-8 text-center">
                     <Calendar className="h-12 w-12 text-white/40 mx-auto mb-4" />
-                    <p className="text-white/60">Nessuna partita programmata al momento</p>
+                    <p className="text-white/60">Nessuna partita programmata a breve.</p>
                   </CardContent>
                 </Card>
               )}
             </div>
 
-            {/* Past Matches */}
+            {/* COLONNA 2: Risultati Passati */}
             <div>
               <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
                 <Trophy className="h-7 w-7 text-[var(--color-volleyball-green-light)]" />
-                Risultati
+                Ultimi Risultati
               </h2>
               {pastMatches && pastMatches.length > 0 ? (
                 <div className="space-y-6">
                   {pastMatches.map((match) => (
-                    <Card key={match.id} className="glass border-white/20">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
+                    <Card key={match.id} className="glass border-white/20 overflow-hidden">
+                      {/* FIX: Bilanciamento padding verticale (py-3) e orizzontale (px-5) */}
+                      <CardHeader className="py-3 px-5 bg-white/5 flex flex-row items-center justify-between space-y-0">
                           <div className="flex items-center gap-2">
                             <Trophy className="h-4 w-4 text-[var(--color-volleyball-green-light)]" />
-                            <span className="text-[var(--color-volleyball-green-light)] font-medium text-sm">
+                            <span className="text-[var(--color-volleyball-green-light)] font-bold text-xs uppercase tracking-wide">
                               {match.campionato}
                             </span>
                           </div>
-                          {getMatchStatusBadge(match.stato, match.data_partita)}
-                        </div>
+                          <span className="text-white/50 text-xs font-medium bg-black/20 px-2 py-1 rounded">
+                            {formatDate(match.data_partita)}
+                          </span>
                       </CardHeader>
-                      <CardContent>
-                        <div className="text-center mb-4">
-                          <div className="flex items-center justify-center gap-6 mb-2">
-                            <div className="text-center">
-                              <div className="text-white font-bold text-lg mb-1">{match.squadra_casa}</div>
-                              <div className="text-4xl font-bold text-[var(--color-volleyball-green-light)]">
-                                {match.risultato_casa ?? "-"}
-                              </div>
+
+                      <CardContent className="pt-6 pb-6">
+                        <div className="flex items-center justify-between gap-2 sm:gap-4">
+                            {/* Squadra Casa */}
+                            <div className="flex-1 text-right">
+                                <div className={`font-bold text-lg leading-tight md:text-xl ${
+                                    (match.risultato_casa || 0) > (match.risultato_ospite || 0) 
+                                    ? "text-[var(--color-volleyball-green-light)] drop-shadow-[0_0_8px_rgba(34,197,94,0.3)]" 
+                                    : "text-white"
+                                }`}>
+                                    {match.squadra_casa}
+                                </div>
                             </div>
-                            <span className="text-white/60 text-3xl">-</span>
-                            <div className="text-center">
-                              <div className="text-white font-bold text-lg mb-1">{match.squadra_ospite}</div>
-                              <div className="text-4xl font-bold text-[var(--color-volleyball-green-light)]">
-                                {match.risultato_ospite ?? "-"}
-                              </div>
+
+                            {/* Punteggio */}
+                            <div className="flex items-center justify-center min-w-[100px] gap-2 bg-black/40 px-3 py-2 rounded-lg border border-white/10 shadow-inner">
+                                <span className="text-2xl md:text-3xl font-bold text-white tabular-nums">{match.risultato_casa ?? "-"}</span>
+                                <span className="text-white/40 text-xl font-light mx-1">:</span>
+                                <span className="text-2xl md:text-3xl font-bold text-white tabular-nums">{match.risultato_ospite ?? "-"}</span>
                             </div>
-                          </div>
-                        </div>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center gap-2 text-white/80">
-                            <Calendar className="h-4 w-4" />
-                            <span>{formatDate(match.data_partita)}</span>
-                          </div>
-                          {match.luogo && (
-                            <div className="flex items-center gap-2 text-white/80">
-                              <MapPin className="h-4 w-4" />
-                              <span>{match.luogo}</span>
+
+                            {/* Squadra Ospite */}
+                            <div className="flex-1 text-left">
+                                <div className={`font-bold text-lg leading-tight md:text-xl ${
+                                    (match.risultato_ospite || 0) > (match.risultato_casa || 0) 
+                                    ? "text-[var(--color-volleyball-green-light)] drop-shadow-[0_0_8px_rgba(34,197,94,0.3)]" 
+                                    : "text-white"
+                                }`}>
+                                    {match.squadra_ospite}
+                                </div>
                             </div>
-                          )}
                         </div>
                       </CardContent>
                     </Card>
@@ -245,11 +253,12 @@ export default async function PartitePage() {
                 <Card className="glass border-white/20">
                   <CardContent className="p-8 text-center">
                     <Trophy className="h-12 w-12 text-white/40 mx-auto mb-4" />
-                    <p className="text-white/60">Nessun risultato disponibile</p>
+                    <p className="text-white/60">Nessun risultato recente.</p>
                   </CardContent>
                 </Card>
               )}
             </div>
+
           </div>
         </div>
       </section>
