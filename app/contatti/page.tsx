@@ -23,7 +23,6 @@ export default function ContattiPage() {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    // Costruisci il corpo della email
     const emailBody = `
 Nome: ${formData.nome} ${formData.cognome}
 Email: ${formData.email}
@@ -33,10 +32,8 @@ Messaggio:
 ${formData.messaggio}
     `.trim()
 
-    // Crea il mailto link
     const mailtoLink = `mailto:Marcorigutti@gmail.com?subject=${encodeURIComponent(formData.oggetto)}&body=${encodeURIComponent(emailBody)}`
 
-    // Apri il client email
     window.location.href = mailtoLink
   }
 
@@ -46,6 +43,7 @@ ${formData.messaggio}
       [e.target.id]: e.target.value,
     })
   }
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
       <Header />
@@ -217,35 +215,7 @@ ${formData.messaggio}
                 </CardContent>
               </Card>
 
-              {/* Training Schedule */}
-              {/* <Card className="glass border-white/20">
-                <CardHeader className="bg-black/40 backdrop-blur-sm">
-                  <CardTitle className="text-2xl text-white flex items-center gap-3">
-                    <Clock className="h-6 w-6 text-[var(--color-volleyball-green-light)]" />
-                    Orari di Allenamento
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 bg-black/40 backdrop-blur-sm space-y-4">
-                  <div className="flex justify-between items-center py-2 border-b border-white/10">
-                    <span className="text-white font-medium">Prima Squadra</span>
-                    <span className="text-white/80">Mar/Gio 20:00-22:00</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-white/10">
-                    <span className="text-white font-medium">Under 18</span>
-                    <span className="text-white/80">Lun/Mer 18:00-20:00</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-white/10">
-                    <span className="text-white font-medium">Under 16</span>
-                    <span className="text-white/80">Mar/Ven 17:00-19:00</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-white font-medium">Minivolley</span>
-                    <span className="text-white/80">Sab 15:00-16:30</span>
-                  </div>
-                </CardContent>
-              </Card> */}
-
-              {/* Map */}
+              {/* Map - USING OPENSTREETMAP (Provider Alternativo) */}
               <Card className="glass border-white/20">
                 <CardHeader className="bg-black/40 backdrop-blur-sm">
                   <CardTitle className="text-2xl text-white flex items-center gap-3">
@@ -254,22 +224,30 @@ ${formData.messaggio}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 bg-black/40 backdrop-blur-sm">
-                  <div className="aspect-video rounded-lg overflow-hidden">
-                    <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2783.7144467567845!2d13.769877976892906!3d45.66169497107553!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x477b6b06e7c0e8b1%3A0x7f8e9d0e8f8e9d0e!2sVia%20della%20Valle%2C%203%2C%2034124%20Trieste%20TS!5e0!3m2!1sit!2sit!4v1234567890123!5m2!1sit!2sit"
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title="Mappa Palestra Volley Club Trieste"
+                  <div className="aspect-video rounded-lg overflow-hidden bg-gray-800 relative border border-white/10">
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        // Link OpenStreetMap centrato su Palestra Cobolli (Via della Valle 3)
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6849.604265671063!2d13.76604637670497!3d45.64611272128212!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x477b6b7427084f65%3A0xc132832523d8338d!2sPalestra%20Comunale%20Nicol%C3%B2%20Cobolli!5e1!3m2!1sen!2sit!4v1768154095264!5m2!1sen!2sit"
+                        style={{ border: 0 }} 
+                        allowFullScreen={true} 
+                        loading="lazy"
+                        title="Mappa Palestra Cobolli"
+                        className="grayscale hover:grayscale-0 transition-all duration-500"
                     ></iframe>
                   </div>
-                  {/* <p className="text-white/80 text-sm mt-4 text-pretty">
-                    La palestra è facilmente raggiungibile con i mezzi pubblici (linee 2, 8, 15) e dispone di parcheggio
-                    gratuito nelle vicinanze.
-                  </p> */}
+                  <p className="text-white/60 text-sm mt-4 text-center">
+                    <a 
+                        // Link diretto per aprire su sito esterno/app
+                        href="https://www.openstreetmap.org/?mlat=45.6233&mlon=13.7971#map=17/45.6233/13.7971" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="hover:text-[var(--color-volleyball-green-light)] underline decoration-dotted underline-offset-4"
+                    >
+                        Apri mappa ingrandita
+                    </a>
+                  </p>
                 </CardContent>
               </Card>
             </div>
