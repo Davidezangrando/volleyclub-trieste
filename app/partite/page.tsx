@@ -88,7 +88,6 @@ export default async function PartitePage() {
 
   const recentResults = allPastMatches.filter(match => {
     const camp = match.campionato || "Generico";
-    // Se non abbiamo ancora mostrato questo campionato, mostriamolo (essendo ordinati per data, è il più recente)
     if (!shownResultsChampionships.has(camp)) {
         shownResultsChampionships.add(camp);
         return true;
@@ -204,7 +203,7 @@ export default async function PartitePage() {
               )}
             </div>
 
-            {/* COLONNA 2: Ultimi Risultati (Uno per Campionato) */}
+            {/* COLONNA 2: Ultimi Risultati */}
             <div>
               <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
                 <Trophy className="h-7 w-7 text-[var(--color-volleyball-green-light)]" />
@@ -227,10 +226,12 @@ export default async function PartitePage() {
                       </CardHeader>
 
                       <CardContent className="pt-6 pb-6">
+                        {/* FIX MOBILE: Aggiunto min-w-0 ai flex items, ridotto font size su mobile, aggiunto break-words */}
                         <div className="flex items-center justify-between gap-2 sm:gap-4">
+                            
                             {/* Squadra Casa */}
-                            <div className="flex-1 text-right">
-                                <div className={`font-bold text-lg leading-tight md:text-xl ${
+                            <div className="flex-1 text-right min-w-0">
+                                <div className={`font-bold text-sm sm:text-lg md:text-xl leading-tight break-words hyphens-auto ${
                                     (match.risultato_casa || 0) > (match.risultato_ospite || 0) 
                                     ? "text-[var(--color-volleyball-green-light)] drop-shadow-[0_0_8px_rgba(34,197,94,0.3)]" 
                                     : "text-white"
@@ -240,15 +241,15 @@ export default async function PartitePage() {
                             </div>
 
                             {/* Punteggio */}
-                            <div className="flex items-center justify-center min-w-[100px] gap-2 bg-black/40 px-3 py-2 rounded-lg border border-white/10 shadow-inner">
-                                <span className="text-2xl md:text-3xl font-bold text-white tabular-nums">{match.risultato_casa ?? "-"}</span>
-                                <span className="text-white/40 text-xl font-light mx-1">:</span>
-                                <span className="text-2xl md:text-3xl font-bold text-white tabular-nums">{match.risultato_ospite ?? "-"}</span>
+                            <div className="flex items-center justify-center min-w-[80px] sm:min-w-[100px] gap-2 bg-black/40 px-2 sm:px-3 py-2 rounded-lg border border-white/10 shadow-inner">
+                                <span className="text-xl sm:text-3xl font-bold text-white tabular-nums">{match.risultato_casa ?? "-"}</span>
+                                <span className="text-white/40 text-lg sm:text-xl font-light mx-1">:</span>
+                                <span className="text-xl sm:text-3xl font-bold text-white tabular-nums">{match.risultato_ospite ?? "-"}</span>
                             </div>
 
                             {/* Squadra Ospite */}
-                            <div className="flex-1 text-left">
-                                <div className={`font-bold text-lg leading-tight md:text-xl ${
+                            <div className="flex-1 text-left min-w-0">
+                                <div className={`font-bold text-sm sm:text-lg md:text-xl leading-tight break-words hyphens-auto ${
                                     (match.risultato_ospite || 0) > (match.risultato_casa || 0) 
                                     ? "text-[var(--color-volleyball-green-light)] drop-shadow-[0_0_8px_rgba(34,197,94,0.3)]" 
                                     : "text-white"
