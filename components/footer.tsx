@@ -117,7 +117,7 @@ export function Footer() {
 
         <div className="border-t border-white/10 dark:border-white/10 mt-6 sm:mt-8 pt-6 sm:pt-8 text-center">
           <p className="text-white/60 dark:text-white/60 text-xs sm:text-sm px-4 mb-2">
-            © 2025 Volley Club Trieste. Tutti i diritti riservati.
+            © 2026 Volley Club Trieste. Tutti i diritti riservati.
           </p>
           <p className="text-white/60 dark:text-white/60 text-xs sm:text-sm px-4">
             Sito web sviluppato da{" "}
