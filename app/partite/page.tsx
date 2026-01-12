@@ -30,6 +30,7 @@ function formatDate(dateString: string) {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "Europe/Rome",
   })
 }
 
@@ -38,6 +39,7 @@ function formatTime(dateString: string) {
   return date.toLocaleTimeString("it-IT", {
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Europe/Rome",
   })
 }
 
