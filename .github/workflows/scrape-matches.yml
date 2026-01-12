@@ -2,8 +2,11 @@ name: Scrape Partite Volley
 
 on:
   schedule:
-    - cron: '0 4 * * *' # Ogni giorno alle 4:00 UTC
-  workflow_dispatch:
+    # Gli orari sono in UTC. Italia è UTC+1 (Inverno).
+    - cron: '0 7 * * *'   # 07:00 UTC -> 08:00 Italia
+    - cron: '0 15 * * *'  # 15:00 UTC -> 16:00 Italia
+    - cron: '55 22 * * *' # 22:55 UTC -> 23:55 Italia
+  workflow_dispatch:      # Permette l'avvio manuale
 
 jobs:
   scrape:
@@ -19,7 +22,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        # L'opzione --legacy-peer-deps risolve il conflitto tra React 19 e vaul
+        # --legacy-peer-deps risolve il conflitto React 19 / vaul
         run: npm install --legacy-peer-deps
 
       - name: Run Scraper Script

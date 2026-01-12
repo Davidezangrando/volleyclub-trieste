@@ -63,7 +63,7 @@ function getMatchStatusBadge(stato: string, dataPartita: string) {
 export default async function PartitePage() {
   const supabase = await createClient()
 
-  // Recuperiamo tutte le partite
+  // Recuperiamo tutte le partite ordinate per data
   const { data: matches, error } = await supabase
     .from("partite")
     .select("*")
@@ -75,27 +75,40 @@ export default async function PartitePage() {
 
   const now = new Date()
 
-  // --- LOGICA RISULTATI (Partite Passate) ---
-  const pastMatches = matches
+  // --- LOGICA RISULTATI (Partite Passate - Una per Campionato) ---
+  const allPastMatches = matches
     ?.filter((match) => {
       const matchDate = new Date(match.data_partita)
       return match.stato === "conclusa" || (match.stato === "programmata" && matchDate < now)
     })
-    .sort((a, b) => new Date(b.data_partita).getTime() - new Date(a.data_partita).getTime())
+    // Ordiniamo DESC (dalla più recente alla più vecchia)
+    .sort((a, b) => new Date(b.data_partita).getTime() - new Date(a.data_partita).getTime()) || []
+
+  const shownResultsChampionships = new Set<string>();
+
+  const recentResults = allPastMatches.filter(match => {
+    const camp = match.campionato || "Generico";
+    // Se non abbiamo ancora mostrato questo campionato, mostriamolo (essendo ordinati per data, è il più recente)
+    if (!shownResultsChampionships.has(camp)) {
+        shownResultsChampionships.add(camp);
+        return true;
+    }
+    return false;
+  });
 
 
-  // --- LOGICA PROSSIME PARTITE (Una per squadra/campionato) ---
+  // --- LOGICA PROSSIME PARTITE (Una per Campionato) ---
   const allUpcoming = matches?.filter((match) => {
     const matchDate = new Date(match.data_partita)
     return match.stato === "programmata" && matchDate >= now
   }) || []
 
-  const shownChampionships = new Set<string>();
+  const shownUpcomingChampionships = new Set<string>();
   
   const upcomingMatches = allUpcoming.filter(match => {
     const camp = match.campionato || "Generico";
-    if (!shownChampionships.has(camp)) {
-        shownChampionships.add(camp);
+    if (!shownUpcomingChampionships.has(camp)) {
+        shownUpcomingChampionships.add(camp);
         return true;
     }
     return false;
@@ -191,17 +204,16 @@ export default async function PartitePage() {
               )}
             </div>
 
-            {/* COLONNA 2: Risultati Passati */}
+            {/* COLONNA 2: Ultimi Risultati (Uno per Campionato) */}
             <div>
               <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
                 <Trophy className="h-7 w-7 text-[var(--color-volleyball-green-light)]" />
                 Ultimi Risultati
               </h2>
-              {pastMatches && pastMatches.length > 0 ? (
+              {recentResults && recentResults.length > 0 ? (
                 <div className="space-y-6">
-                  {pastMatches.map((match) => (
+                  {recentResults.map((match) => (
                     <Card key={match.id} className="glass border-white/20 overflow-hidden">
-                      {/* FIX: Bilanciamento padding verticale (py-3) e orizzontale (px-5) */}
                       <CardHeader className="py-3 px-5 bg-white/5 flex flex-row items-center justify-between space-y-0">
                           <div className="flex items-center gap-2">
                             <Trophy className="h-4 w-4 text-[var(--color-volleyball-green-light)]" />
@@ -248,6 +260,9 @@ export default async function PartitePage() {
                       </CardContent>
                     </Card>
                   ))}
+                   <p className="text-center text-white/40 text-sm mt-4 italic">
+                    * Viene mostrato solo l'ultimo risultato per ogni campionato.
+                  </p>
                 </div>
               ) : (
                 <Card className="glass border-white/20">
