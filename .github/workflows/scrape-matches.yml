@@ -2,11 +2,11 @@ name: Scrape Partite Volley
 
 on:
   schedule:
-    # Gli orari sono in UTC. Italia è UTC+1 (Inverno).
-    - cron: '0 7 * * *'   # 07:00 UTC -> 08:00 Italia
-    - cron: '0 15 * * *'  # 15:00 UTC -> 16:00 Italia
-    - cron: '55 22 * * *' # 22:55 UTC -> 23:55 Italia
-  workflow_dispatch:      # Permette l'avvio manuale
+    # Orari UTC (corrispondono a 8:00, 16:00, 23:55 in inverno italiano)
+    - cron: '0 7 * * *'
+    - cron: '0 15 * * *'
+    - cron: '55 22 * * *'
+  workflow_dispatch:
 
 jobs:
   scrape:
@@ -22,12 +22,17 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        # --legacy-peer-deps risolve il conflitto React 19 / vaul
         run: npm install --legacy-peer-deps
 
       - name: Run Scraper Script
         run: npx tsx scripts/scrape-matches.ts
         env:
+          # --- CONFIGURAZIONE CHIAVI ---
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # --- FIX FUSO ORARIO ---
+          # Forziamo il server a usare il fuso orario di Roma.
+          # Così "new Date(..20:30)" viene interpretato come orario italiano
+          # e convertito correttamente in UTC (19:30) per il database.
+          TZ: 'Europe/Rome'
