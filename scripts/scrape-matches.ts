@@ -31,8 +31,10 @@ const TRIESTE_BASE_URL = "https://trieste.portalefipav.net";
 const TRIESTE_CHAMPIONSHIPS = [
     { id: 85747, name: '1a Divisione Maschile' },
     { id: 85684, name: '1a Divisione Femminile' }, // Aggiungi ID corretto se diverso
+    { id: 85686, name: '3a Divisione Femminile' },
     { id: 86019, name: 'Under 15 Maschile' },
-    { id: 85727, name: 'Under 17 Maschile' }
+    { id: 85727, name: 'Under 17 Maschile' },
+    { id: 86018, name: 'Under 14 Femminile' },
 ];
 
 // --- CONFIGURAZIONE FVG (Portale Regionale) ---
@@ -147,7 +149,7 @@ async function scrapeFipavFVG() {
         const response = await fetch(FVG_URL);
         const html = await response.text(); 
         const $ = cheerio.load(html);
-        console.log(html);
+        // console.log(html);
         const rows = $('table.tbl-risultati tbody tr').toArray();
         let count = 0;
 
