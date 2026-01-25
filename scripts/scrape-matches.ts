@@ -167,7 +167,7 @@ async function scrapeFipavFVG() {
                 // Identificazione Campionato dal titolo della tabella
                 const captionText = $(row).closest('table').find('caption').text().toLowerCase();
                 let categoryName = 'Serie D';
-                
+
                 // Logica intelligente per distinguere i campionati
                 if (captionText.includes('serie d') && captionText.includes(' f ')) {
                     categoryName = 'Serie D Femminile';
@@ -175,7 +175,17 @@ async function scrapeFipavFVG() {
                     categoryName = 'Serie D Maschile';
                 } else if (captionText.includes('1 div') || captionText.includes('under')) {
                     // Evita duplicati se FVG pubblica anche i campionati provinciali
-                    continue; 
+                    continue;
+                } else {
+                    // Fallback: determina dal nome della squadra
+                    const normalize = (str: string) => str.toLowerCase();
+                    if (normalize(teamHome).includes('rosso volley club ts') ||
+                        normalize(teamAway).includes('rosso volley club ts')) {
+                        categoryName = 'Serie D Maschile';
+                    } else if (normalize(teamHome).includes('volley club ts') ||
+                               normalize(teamAway).includes('volley club ts')) {
+                        categoryName = 'Serie D Femminile';
+                    }
                 }
 
                 // Parsing Data (formato: gg/mm/yy HH:MM)

@@ -95,9 +95,15 @@ export default function ChiSiamoPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Badge className="bg-[var(--color-volleyball-green)] hover:bg-[var(--color-volleyball-green-light)]">
+                      Terza divisione
+                    </Badge>
+                    <span className="text-white/80">Femminile</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge className="bg-[var(--color-volleyball-green)] hover:bg-[var(--color-volleyball-green-light)]">
                       Under
                     </Badge>
-                    <span className="text-white/80">Under 17 maschile e under 14 femminile</span>
+                    <span className="text-white/80">Under 17 maschile, Under 15 maschile e Under 14 femminile</span>
                   </div>
                   {/* <div className="flex items-center gap-3">
                     <Badge className="bg-[var(--color-volleyball-green)] hover:bg-[var(--color-volleyball-green-light)]">
