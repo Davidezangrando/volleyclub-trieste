@@ -25,6 +25,7 @@ interface Squadra {
   immagine_url: string | null
   allenatore: string | null
   assistente_allenatore: string | null
+  dirigente: string | null
   slug: string
 }
 
@@ -191,12 +192,30 @@ export default async function SquadraDetailPage({ params }: { params: Promise<{ 
                   </div>
                   <div>
                     <p className="text-white/50 font-bold text-xs uppercase tracking-widest">
-                      Dirigente
+                      Aiuto allenatore
                     </p>
                     <p className="text-white font-bold text-lg">{typedSquadra.assistente_allenatore}</p>
                   </div>
                 </CardContent>
               </Card>
+            )}
+
+            {typedSquadra.dirigente && (
+              <Card className="glass border-white/20 bg-white/5">
+                <CardContent className="flex items-center gap-4 p-6">
+                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
+                    <UserCheck className="h-6 w-6 text-white/80" />
+                  </div>
+                  <div>
+                    <p className="text-white/50 font-bold text-xs uppercase tracking-widest">
+                      Dirigente
+                    </p>
+                    <p className="text-white font-bold text-lg">{typedSquadra.dirigente}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+            
             )}
           </div>
         </div>
