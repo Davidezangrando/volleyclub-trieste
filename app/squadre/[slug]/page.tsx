@@ -191,7 +191,7 @@ export default async function SquadraDetailPage({ params }: { params: Promise<{ 
                   </div>
                   <div>
                     <p className="text-white/50 font-bold text-xs uppercase tracking-widest">
-                      Assistente
+                      Dirigente
                     </p>
                     <p className="text-white font-bold text-lg">{typedSquadra.assistente_allenatore}</p>
                   </div>
