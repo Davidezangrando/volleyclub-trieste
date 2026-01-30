@@ -8,7 +8,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Chi Siamo - Storia e Valori",
-  description: "Scopri la storia del Volley Club Trieste dal 1976. 50+ anni di passione per la pallavolo a Trieste. Affiliata FIPAV con codice 70310028, registro CONI 45046. Serie D maschile e femminile, Prima Divisione e settore giovanile.",
+  description: "Scopri la storia del Volley Club Trieste dal 1976. 50 anni di passione per la pallavolo a Trieste. Affiliata FIPAV con codice 70310028, registro CONI 45046. Serie D maschile e femminile, Prima Divisione e settore giovanile.",
   keywords: [
     "storia Volley Club Trieste",
     "chi siamo pallavolo Trieste",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Chi Siamo - Volley Club Trieste",
-    description: "50+ anni di storia della pallavolo a Trieste. Scopri i valori, la missione e il percorso del Volley Club Trieste dal 1976 ad oggi.",
+    description: "50 anni di storia della pallavolo a Trieste. Scopri i valori, la missione e il percorso del Volley Club Trieste dal 1976 ad oggi.",
     url: "https://www.volleyclub.it/chi-siamo",
     images: [
       {
@@ -209,7 +209,7 @@ E quello del Volley Club Trieste è prima di tutto un amore totale per lo sport 
             <Card className="glass border-white/20 text-center">
               <CardContent className="p-6 bg-black/40 backdrop-blur-sm">
                 <Trophy className="h-12 w-12 text-[var(--color-volleyball-green-light)] mx-auto mb-4" />
-                <h3 className="text-3xl font-bold text-white mb-2">50+</h3>
+                <h3 className="text-3xl font-bold text-white mb-2">50</h3>
                 <p className="text-white/80">Anni di Storia</p>
               </CardContent>
             </Card>
