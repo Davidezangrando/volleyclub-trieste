@@ -74,7 +74,7 @@ export function HeroSection() {
                   <Clock className="h-7 w-7 sm:h-8 sm:w-8 text-white drop-shadow-lg" />
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-black text-white light:text-black mb-2 drop-shadow-lg group-hover:text-[var(--color-volleyball-green-light)] transition-colors duration-300">
-                  40+
+                  50+
                 </h2>
                 <p className="text-sm sm:text-base text-white/90 light:text-black/80 font-medium drop-shadow-md">Anni di Storia</p>
                 <div className="w-12 h-1 bg-gradient-to-r from-[var(--color-volleyball-green)] to-[var(--color-volleyball-green-light)] mx-auto mt-3 sm:mt-4 rounded-full shadow-lg group-hover:w-16 transition-all duration-300"></div>
