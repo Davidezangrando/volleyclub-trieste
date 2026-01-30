@@ -136,7 +136,7 @@ Si giocava ormai totalmente al coperto dopo che per anni si era giocato prevalen
             </Card>
 
             {/* Immagine 1 */}
-            <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-8">
+            <div className="relative h-[900px] md:h-[900px] rounded-2xl overflow-hidden mb-8">
               <Image
                 src="/images/storia/storia-1.jpg"
                 alt="Storia del Volley Club Trieste - Origini"
@@ -172,7 +172,7 @@ Negli anni Duemila, si sono distinti in panchina Rudi Unterweger, Andrea Carbone
             </Card>
 
             {/* Immagine 2 */}
-            <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-8">
+            <div className="relative h-[100px] md:h-[500px] rounded-2xl overflow-hidden mb-8">
               <Image
                 src="/images/storia/storia-2.jpg"
                 alt="Storia del Volley Club Trieste - Crescita"
@@ -209,14 +209,14 @@ E quello del Volley Club Trieste è prima di tutto un amore totale per lo sport 
             <Card className="glass border-white/20 text-center">
               <CardContent className="p-6 bg-black/40 backdrop-blur-sm">
                 <Trophy className="h-12 w-12 text-[var(--color-volleyball-green-light)] mx-auto mb-4" />
-                <h3 className="text-3xl font-bold text-white mb-2">40+</h3>
+                <h3 className="text-3xl font-bold text-white mb-2">50+</h3>
                 <p className="text-white/80">Anni di Storia</p>
               </CardContent>
             </Card>
             <Card className="glass border-white/20 text-center">
               <CardContent className="p-6 bg-black/40 backdrop-blur-sm">
                 <Users className="h-12 w-12 text-[var(--color-volleyball-green-light)] mx-auto mb-4" />
-                <h3 className="text-3xl font-bold text-white mb-2">4</h3>
+                <h3 className="text-3xl font-bold text-white mb-2">8</h3>
                 <p className="text-white/80">Squadre Attive</p>
               </CardContent>
             </Card>

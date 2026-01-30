@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Contatti",
-  description: "Contatta il Volley Club Trieste. Siamo in Via della Valle, 3 a Trieste. Email: Marcorigutti@gmail.com, Tel: +39 3805245982. Vuoi unirti alle nostre squadre o diventare sponsor? Scrivici!",
+  description: "Contatta il Volley Club Trieste. Siamo in Via della Valle, 3 a Trieste. Email: info@volleyclub.it, Tel: +39 3805245982. Vuoi unirti alle nostre squadre o diventare sponsor? Scrivici!",
   keywords: [
     "contatti Volley Club Trieste",
     "email pallavolo Trieste",

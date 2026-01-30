@@ -10,13 +10,13 @@ export function Footer() {
           {/* Logo and Description */}
           <div className="sm:col-span-2 md:col-span-1">
             <div className="flex items-center space-x-2 mb-3 sm:mb-4">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-lg">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-lg bg-black">
                 <Image
                   src="/images/vc-logo.png"
                   alt="Volley Club Trieste Logo"
-                  width={40}
-                  height={40}
-                  className="w-full h-full object-cover"
+                  width={50}
+                  height={50}
+                  className="w-full h-full object-contain"
                 />
               </div>
               <div>
@@ -81,7 +81,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 sm:h-4 sm:w-4 text-[var(--color-volleyball-green-light)] flex-shrink-0" />
-                <span className="text-white/70 dark:text-white/70 text-xs sm:text-sm break-all">Marcorigutti@gmail.com</span>
+                <span className="text-white/70 dark:text-white/70 text-xs sm:text-sm break-all">info@volleyclub.it</span>
               </li>
             </ul>
           </div>

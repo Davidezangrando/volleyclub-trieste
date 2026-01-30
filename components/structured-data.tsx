@@ -31,7 +31,7 @@ export function StructuredData() {
       "@type": "ContactPoint",
       "telephone": "+39-380-5245982",
       "contactType": "Customer Service",
-      "email": "Marcorigutti@gmail.com",
+      "email": "info@volleyclub.it",
       "availableLanguage": ["Italian"]
     },
     "sameAs": [
@@ -52,7 +52,7 @@ export function StructuredData() {
     "image": "https://www.volleyclub.it/images/vc-logo.png",
     "url": "https://www.volleyclub.it",
     "telephone": "+39-380-5245982",
-    "email": "Marcorigutti@gmail.com",
+    "email": "info@volleyclub.it",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Via della Valle, 3",

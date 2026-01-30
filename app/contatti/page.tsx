@@ -32,7 +32,7 @@ Messaggio:
 ${formData.messaggio}
     `.trim()
 
-    const mailtoLink = `mailto:Marcorigutti@gmail.com?subject=${encodeURIComponent(formData.oggetto)}&body=${encodeURIComponent(emailBody)}`
+    const mailtoLink = `mailto:info@volleyclub.it?subject=${encodeURIComponent(formData.oggetto)}&body=${encodeURIComponent(emailBody)}`
 
     window.location.href = mailtoLink
   }
@@ -188,7 +188,7 @@ ${formData.messaggio}
                   <div className="flex items-start gap-4">
                     <MapPin className="h-6 w-6 text-[var(--color-volleyball-green-light)] mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="text-white font-semibold mb-1">Sede e Palestra</h3>
+                      <h3 className="text-white font-semibold mb-1">Campo di gioco principale</h3>
                       <p className="text-white/80">
                         Palestra Cobolli Trieste
                         <br />
@@ -209,7 +209,7 @@ ${formData.messaggio}
                     <Mail className="h-6 w-6 text-[var(--color-volleyball-green-light)] mt-1 flex-shrink-0" />
                     <div>
                       <h3 className="text-white font-semibold mb-1">Email</h3>
-                      <p className="text-white/80">Marcorigutti@gmail.com</p>
+                      <p className="text-white/80">info@volleyclub.it</p>
                     </div>
                   </div>
                 </CardContent>
