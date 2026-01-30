@@ -92,6 +92,8 @@ export function Footer() {
             <div className="flex space-x-3 sm:space-x-4">
               <a
                 href="https://www.facebook.com/ASDVolleyClubTrieste"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-9 h-9 sm:w-10 sm:h-10 bg-white/10 dark:bg-white/10 rounded-full flex items-center justify-center hover:bg-[var(--color-volleyball-green)] dark:hover:bg-[var(--color-volleyball-green)] transition-all duration-300 hover:scale-110 hover:shadow-lg"
                 aria-label="Facebook"
               >
@@ -99,6 +101,8 @@ export function Footer() {
               </a>
               <a
                 href="https://www.instagram.com/volleyclubtrieste/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-9 h-9 sm:w-10 sm:h-10 bg-white/10 dark:bg-white/10 rounded-full flex items-center justify-center hover:bg-[var(--color-volleyball-green)] dark:hover:bg-[var(--color-volleyball-green)] transition-all duration-300 hover:scale-110 hover:shadow-lg"
                 aria-label="Instagram"
               >
